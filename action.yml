@@ -28,7 +28,8 @@ runs:
     - name: Run command on container
       run: |
         tmpfile=$(mktemp)
-        echo 'cd /work' > $tmpfile
+        echo 'set -ex' > $tmpfile
+        echo 'cd /work' >> $tmpfile
         cat <<"EOF" >> $tmpfile
         ${{ inputs.run }}
         EOF
