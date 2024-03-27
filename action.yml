@@ -19,7 +19,9 @@ runs:
   using: "composite"
   steps:
     - run: |
-        echo ${{ inputs.run }} > ${{ github.workspace }}/___run.sh
-        docker run -v ${{ github.workspace }}:/work -w /work --platform ${{ inputs.platform }} ${{ inputs.image }} ${{ inputs.shell }} ___run.sh
+        tmpfile=$(mktemp)
+        echo 'cd /work' > $tmpfile
+        echo ${{ inputs.run }} >> $tmpfile
+        docker run -v ${{ github.workspace }}:/work -v $tmpfile:/__run.sh -w /work --platform ${{ inputs.platform }} ${{ inputs.image }} ${{ inputs.shell }} /___run.sh
         rm ${{ github.workspace }}/___run.sh
       shell: bash
