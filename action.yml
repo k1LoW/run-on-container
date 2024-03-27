@@ -9,15 +9,17 @@ inputs:
     required: true
   platform:
     description: Platform
+    required: false
     default: 'linux/amd64'
-    required: true
   shell:
     description: Shell
-    default: 'sh'
+    required: false
+    default: 'sh'    
 runs:
   using: "composite"
   steps:
     - run: |
         echo ${{ inputs.run }} > ${{ github.workspace }}/___run.sh
-        docker run -v ${{ github.workspace }}:/work -w /work ${{ inputs.image }} ${{ inputs.shell }} ___run.sh
+        docker run -v ${{ github.workspace }}:/work -w /work --platform ${{ inputs.platform }} ${{ inputs.image }} ${{ inputs.shell }} ___run.sh
         rm ${{ github.workspace }}/___run.sh
+      shell: bash
