@@ -2,26 +2,39 @@ name: 'run-on-container'
 description: 'Run on container'
 inputs:
   run:
-    description: Command
+    description: Commands to run
     required: true
   image:
-    description: Container image
+    description: Image of container
     required: true
   platform:
-    description: Platform
+    description: Platform of container
     required: false
     default: 'linux/amd64'
+  args:
+    description: Additional args for `docker run`
+    required: false
   shell:
     description: Shell
     required: false
-    default: 'sh'    
+    default: 'sh'
 runs:
   using: "composite"
   steps:
-    - run: |
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: ${{ inputs.platform }}
+    - name: Run command on container
+      run: |
         tmpfile=$(mktemp)
         echo 'cd /work' > $tmpfile
-        echo ${{ inputs.run }} >> $tmpfile
-        docker run -v ${{ github.workspace }}:/work -v $tmpfile:/__run.sh -w /work --platform ${{ inputs.platform }} ${{ inputs.image }} ${{ inputs.shell }} /___run.sh
-        rm ${{ github.workspace }}/___run.sh
+        cat <<"EOF" >> $tmpfile
+        ${{ inputs.run }}
+        EOF
+        echo "::group::Commands to run on container"
+        cat $tmpfile
+        echo "::endgroup::"
+        docker run -v ${{ github.workspace }}:/work -v $tmpfile:/__run.sh -w /work --platform ${{ inputs.platform }} ${{ inputs.args }} ${{ inputs.image }} ${{ inputs.shell }} /__run.sh
+        rm $tmpfile
       shell: bash
