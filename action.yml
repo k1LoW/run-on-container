@@ -1,0 +1,23 @@
+name: 'run-on-container'
+description: 'Run on container'
+inputs:
+  run:
+    description: Command
+    required: true
+  image:
+    description: Container image
+    required: true
+  platform:
+    description: Platform
+    default: 'linux/amd64'
+    required: true
+  shell:
+    description: Shell
+    default: 'sh'
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo ${{ inputs.run }} > ${{ github.workspace }}/___run.sh
+        docker run -v ${{ github.workspace }}:/work -w /work ${{ inputs.image }} ${{ inputs.shell }} ___run.sh
+        rm ${{ github.workspace }}/___run.sh
