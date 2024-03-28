@@ -1,0 +1,32 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v4
+
+      - name: Run on ubuntu:latest + linux/amd64
+        uses: ./
+        with:
+          run: uname -a | grep x86_64
+          image: ubuntu:latest
+          platform: linux/amd64
+
+      - name: Run on ubuntu:latest + linux/arm64
+        uses: ./
+        with:
+          run: uname -a | grep aarch64
+          image: ubuntu:latest
+          platform: linux/arm64
+          
