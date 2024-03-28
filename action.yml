@@ -29,6 +29,7 @@ runs:
       run: |
         tmpfile=$(mktemp)
         echo 'set -ex' > $tmpfile
+        echo 'which git &>/dev/null && git config --global --add safe.directory /work' >> $tmpfile
         echo 'cd /work' >> $tmpfile
         cat <<"EOF" >> $tmpfile
         ${{ inputs.run }}
