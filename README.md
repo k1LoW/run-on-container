@@ -7,7 +7,7 @@ Action to run a command on any container on any platform.
 ### Run on ubuntu:latest + linux/arm64
 
 ``` yaml
-- uses: k1LoW/run-on-container@main
+- uses: k1LoW/run-on-container@v1
   with:
     run: |
       uname -a
